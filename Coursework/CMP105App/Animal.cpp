@@ -39,10 +39,19 @@ void Animal::collisionResponse(GameObject& collider)
 {
     m_velocity *= -m_restitution;
 
-    if (m_velocity.lengthSquared() < 150)
-        move(m_velocity.normalized() * 25.f);
-    else
-        move(m_velocity.normalized() * 5.f);
+    // Calculate squared length to avoid expensive square root if not needed
+    float lengthSq = m_velocity.x * m_velocity.x + m_velocity.y * m_velocity.y;
+
+    if (lengthSq > 0.0001f) // Only normalize if there is actually movement
+    {
+        sf::Vector2f normalizedVel = m_velocity.normalized();
+
+        if (lengthSq < 150.f)
+            move(normalizedVel * 25.f);
+        else
+            move(normalizedVel * 5.f);
+    }
+
     setDirection();       // handle animation check AGAIN (update usually comes before collisions in level::update)
 }
 
@@ -62,8 +71,11 @@ void Animal::checkWallAndBounce()
 // sets animation pointer based on direction
 void Animal::setDirection()
 {
-    if (m_velocity.lengthSquared() < 1.0f) return;
+    // Use a small epsilon check
+    if (m_velocity.x * m_velocity.x + m_velocity.y * m_velocity.y < 0.1f) return;
 
+    // atan2 is safe with (0,0), but normalized() is not.
+    // If you use normalized() anywhere else in this function, wrap it in a length check.
     float angle = std::atan2(m_velocity.y, m_velocity.x) * (180.0f / 3.14159f);
 
     if (angle > -22.5f && angle <= 22.5f) {

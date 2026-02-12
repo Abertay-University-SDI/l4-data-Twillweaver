@@ -5,6 +5,8 @@
 #include "Framework/Collision.h"
 #include "Sheep.h"
 #include "Rabbit.h"
+#include <iomanip> // For setprecision
+#include <fstream> // For file streams
 
 class Level : BaseLevel {
 public:
@@ -16,6 +18,8 @@ public:
 	void render() override;
 
 private:
+    void loadLevel(std::string filename, sf::Vector2f worldSize);
+
     void UpdateCamera();
     bool CheckWinCondition();
     void manageCollisions();
@@ -40,5 +44,9 @@ private:
     sf::Font m_font;
     sf::Text m_timerText;
     sf::Text m_winText;
-	
+
+    void writeHighScore(float time);
+    void displayScoreboard();
+    sf::Text m_scoreboardText;
+
 };

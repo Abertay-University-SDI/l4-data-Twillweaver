@@ -3,6 +3,9 @@
 
 Rabbit::Rabbit()
 {
+    //m_dragFactor = DRAG_FACTOR;
+    //m_restitution = COEFF_OF_RESTITUTION;
+
     // animations
     for (int i = 0; i < 2; i++)
         m_walkDown.addFrame({ { 64 * (i + 1), 0 }, { 64, 64 } });
@@ -55,7 +58,12 @@ void Rabbit::handleInput(float dt)
     if (m_input->isKeyDown(sf::Keyboard::Scancode::S)) inputDirection.y += 1;
     if (m_input->isKeyDown(sf::Keyboard::Scancode::A)) inputDirection.x -= 1;
 
-    if (inputDirection.length() > 0) inputDirection = inputDirection.normalized();
+    // Check length before normalizing!
+    float lenSq = inputDirection.x * inputDirection.x + inputDirection.y * inputDirection.y;
+    if (lenSq > 0.f)
+    {
+        inputDirection = inputDirection.normalized();
+    }
 
     m_acceleration = inputDirection * RABBIT_ACCELERATION; 
 }

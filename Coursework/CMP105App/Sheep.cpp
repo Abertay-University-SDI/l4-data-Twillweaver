@@ -5,6 +5,9 @@ Sheep::Sheep(sf::Vector2f initial_position, GameObject* pRabbit)
 	setPosition(initial_position);
 	m_rabbitPointer = pRabbit;
 
+	// Apply the tuning constants from Sheep.h to the Animal member variables
+	//m_dragFactor = DRAG_FACTOR;
+	//m_restitution = COEFF_OF_RESTITUTION;
 
 	for (int i = 0; i < 4; i++)
 		m_walkDown.addFrame({ { 64 * i, 0 }, { 64, 64 } });
