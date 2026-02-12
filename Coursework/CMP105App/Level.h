@@ -23,6 +23,8 @@ public:
 private:
     void loadLevel(std::string filename, sf::Vector2f worldSize);
 
+    std::string m_levelName; // Stores the name read from the level file
+
     void UpdateCamera();
     bool CheckWinCondition();
     void manageCollisions();

@@ -95,7 +95,12 @@ void Level::loadLevel(std::string filename, sf::Vector2f worldSize)
     // The while loop pulls the first word (TYPE) from each line
     while (inputFile >> type)
     {
-        if (type == "RABBIT")
+
+        if (type == "LEVELNAME")
+        {
+            inputFile >> m_levelName;
+        }
+        else if (type == "RABBIT")
         {
             inputFile >> x >> y;
             m_playerRabbit->setPosition(sf::Vector2f(x, y));
@@ -134,13 +139,15 @@ void Level::loadLevel(std::string filename, sf::Vector2f worldSize)
 
 void Level::displayScoreboard(float currentTime)
 {
-    std::ifstream inFile("data/highscores.txt");
-    std::vector<float> scores;
+    std::string filename = "data/highscores_" + m_levelName + ".txt";
+    std::ifstream inFile(filename);
 
-    std::string line;
-    //std::string fullBoardText = "PREVIOUS SCORES:\n";
+    std::vector<float> scores;
     float tempScore;
 
+    //std::string line;
+    //std::string fullBoardText = "PREVIOUS SCORES:\n";
+    
     // reading scores into a vector
     if (inFile.is_open())
     {
@@ -156,7 +163,7 @@ void Level::displayScoreboard(float currentTime)
     std::sort(scores.begin(), scores.end());
 
     // build the leaderboard
-    std::string fullBoardText = "TOP 5 SCORES:\n";
+    std::string fullBoardText = "TOP 5:" + m_levelName + "\n";
 
     int displayCount = std::min((int)scores.size(), 5);
 
@@ -239,7 +246,9 @@ void Level::writeHighScore(float time)
 {
     std::ofstream outFile;
     // Open in append mode so we don't wipe previous scores
-    outFile.open("data/highscores.txt", std::ios::app);
+    std::string filename = "data/highscores_" + m_levelName + ".txt";
+
+    outFile.open(filename, std::ios::app);
 
     if (outFile.is_open())
     {
