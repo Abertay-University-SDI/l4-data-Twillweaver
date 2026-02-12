@@ -15,8 +15,8 @@ public:
 
 private:
 	const float ACCELERATION = 50.0f;
-	const float DRAG_FACTOR = 0.98f;
-	const float COEFF_OF_RESTITUTION = 0.85f;
+	const float DRAG_FACTOR = 0.85f;
+	const float COEFF_OF_RESTITUTION = 0.3f;
 	const float ALERT_DISTANCE = 50.0f;
 	GameObject* m_rabbitPointer;
 

@@ -15,8 +15,8 @@ public:
 	void checkWallAndBounce();
 
 private:
-	const float DRAG_FACTOR = 0.95f;
-	const float COEFF_OF_RESTITUTION = 0.85f;
+	const float DRAG_FACTOR = 0.85f;
+	const float COEFF_OF_RESTITUTION = 0.3f;
 	const float RABBIT_ACCELERATION = 50.0f;
 
 

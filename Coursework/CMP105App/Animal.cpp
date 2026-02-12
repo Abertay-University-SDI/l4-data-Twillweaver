@@ -3,6 +3,9 @@
 
 Animal::Animal()
 {
+    // Initialize the pointer to null so it's not pointing at random memory
+    m_currentAnimation = nullptr;
+
     // Set default physics values
     m_dragFactor = 0.9f;    // Example default
     m_restitution = 0.8f;    // Example default
@@ -22,8 +25,17 @@ void Animal::update(float dt)
     
     // handle animation (lab 2 work + new setDirection method)
     setDirection();
-    m_currentAnimation->animate(dt); 
-    setTextureRect(m_currentAnimation->getCurrentFrame());
+
+    // Check if the pointer is valid before using it
+    if (m_currentAnimation != nullptr)
+    {
+        m_currentAnimation->animate(dt);
+        setTextureRect(m_currentAnimation->getCurrentFrame());
+    }
+
+    //old code:
+    //m_currentAnimation->animate(dt); 
+    //setTextureRect(m_currentAnimation->getCurrentFrame());
 
     checkWallAndBounce();
     move(m_velocity);
@@ -47,7 +59,7 @@ void Animal::collisionResponse(GameObject& collider)
         sf::Vector2f normalizedVel = m_velocity.normalized();
 
         if (lengthSq < 150.f)
-            move(normalizedVel * 25.f);
+            move(normalizedVel * 10.f);
         else
             move(normalizedVel * 5.f);
     }
@@ -61,11 +73,33 @@ void Animal::checkWallAndBounce()
     sf::Vector2f pos = getPosition();
     sf::Vector2f size = getSize();
 
-    if ((pos.x < 0 && m_velocity.x < 0) || (pos.x + size.x > m_worldSize.x && m_velocity.x > 0))
+    // horizontal wall check
+    if (pos.x < 0 && m_velocity.x < 0) {
         m_velocity.x *= -m_restitution;
+        setPosition({ 0.f, pos.y }); // Snap to left edge
+    }
+    else if (pos.x + size.x > m_worldSize.x && m_velocity.x > 0) {
+        m_velocity.x *= -m_restitution;
+        setPosition({ m_worldSize.x - size.x, pos.y }); // Snap to right edge
+    }
 
-    if ((pos.y < 0 && m_velocity.y < 0) || (pos.y + size.y > m_worldSize.y && m_velocity.y > 0))
+    // Vertical Wall check
+    pos = getPosition(); // Update pos after potential horizontal snap
+    if (pos.y < 0 && m_velocity.y < 0) {
         m_velocity.y *= -m_restitution;
+        setPosition({ pos.x, 0.f }); // Snap to top edge
+    }
+    else if (pos.y + size.y > m_worldSize.y && m_velocity.y > 0) {
+        m_velocity.y *= -m_restitution;
+        setPosition({ pos.x, m_worldSize.y - size.y }); // Snap to bottom edge
+    }
+
+    // old code:
+    //if ((pos.x < 0 && m_velocity.x < 0) || (pos.x + size.x > m_worldSize.x && m_velocity.x > 0))
+    //    m_velocity.x *= -m_restitution;
+
+    //if ((pos.y < 0 && m_velocity.y < 0) || (pos.y + size.y > m_worldSize.y && m_velocity.y > 0))
+    //    m_velocity.y *= -m_restitution;
 }
 
 // sets animation pointer based on direction
