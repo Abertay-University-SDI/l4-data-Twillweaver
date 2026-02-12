@@ -7,6 +7,9 @@
 #include "Rabbit.h"
 #include <iomanip> // For setprecision
 #include <fstream> // For file streams
+#include <vector>
+#include <algorithm> // for std:sort
+#include <sstream>
 
 class Level : BaseLevel {
 public:
@@ -46,7 +49,7 @@ private:
     sf::Text m_winText;
 
     void writeHighScore(float time);
-    void displayScoreboard();
+    void displayScoreboard(float currentTime);
     sf::Text m_scoreboardText;
 
 };

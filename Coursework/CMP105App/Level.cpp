@@ -57,7 +57,9 @@ Level::Level(sf::RenderWindow& hwnd, Input& in) :
     //old goal:
     // setup goal
     //m_goal.setSize({ 50, 50 });
-    //m_goal.setFillColor(sf::Color::Blue);
+
+    m_goal.setFillColor(sf::Color::Blue);
+
     //m_goal.setPosition({ 250, 250 });
     //m_goal.setCollisionBox({ { 0,0 }, { 50,50 } });
 
@@ -130,27 +132,50 @@ void Level::loadLevel(std::string filename, sf::Vector2f worldSize)
     inputFile.close();
 }
 
-
-
-void Level::displayScoreboard()
+void Level::displayScoreboard(float currentTime)
 {
     std::ifstream inFile("data/highscores.txt");
-    std::string line;
-    std::string fullBoardText = "PREVIOUS SCORES:\n";
+    std::vector<float> scores;
 
+    std::string line;
+    //std::string fullBoardText = "PREVIOUS SCORES:\n";
+    float tempScore;
+
+    // reading scores into a vector
     if (inFile.is_open())
     {
-        while (std::getline(inFile, line))
+        while (inFile >> tempScore)
         {
             // Add the score and a newline to keep them in a list
-            fullBoardText += line + "s\n";
+            scores.push_back(tempScore);
         }
         inFile.close();
     }
-    else
-    {
-        fullBoardText = "No scores yet!";
+    
+    // sort the scores
+    std::sort(scores.begin(), scores.end());
+
+    // build the leaderboard
+    std::string fullBoardText = "TOP 5 SCORES:\n";
+
+    int displayCount = std::min((int)scores.size(), 5);
+
+     for (int i = 0; i < displayCount; i++)
+    { 
+         std::stringstream ss;
+         ss << std::fixed << std::setprecision(2) << scores[i];
+        
+         fullBoardText += std::to_string(i + 1) + "." + ss.str() + "s";
+
+         // highlight the score the player just got
+         if (std::abs(scores[i] - currentTime) < 0.01f)
+         {
+             fullBoardText += " <-- NEW SCORE!";
+         }
+         fullBoardText += "\n";
     }
+
+     if (scores.empty()) fullBoardText = "No sccores yet!";
 
     // Set up the text appearance
     m_scoreboardText.setString(fullBoardText);
@@ -304,9 +329,9 @@ void Level::update(float dt)
     {
         m_isGameOver = true;
         writeHighScore(timeElapsed);
-        displayScoreboard();
+        displayScoreboard(timeElapsed); // Pass the current time here
     }
-
+ 
     //old:
    // m_isGameOver = CheckWinCondition();
 
